@@ -1,0 +1,48 @@
+name: Build and Deploy Portfolio
+
+on:
+    push:
+        branches: ["master"]
+        paths-ignore:
+            - 'infra/**' #  dont run on terrfarom change
+
+permissions:
+    id-token: write #For requesting JWT
+    contents: read # For actions/ checkout
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            # Check out the code
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            # Login to Azure\
+            - name: Azure Login
+              uses: azure/login@v1
+              with:
+                creds: ${{ secrets.AZURE_CREDENTIALS}}
+
+            # Login to Container Registry
+            - name: Login to ACR
+              run: |
+                az acr login --name portfolioacrf1t2jj
+
+            # Build and Push Docker Image
+            - name: Build and Push Image
+              uses: docker/build-push-action@v5
+              with:
+                context: ./app
+                push: true
+                tags: portfolioacrf1t2jj.azurecr.io/portfolio:latest
+
+            # Deploy to Container App
+            - name: Deploy to Container App
+              uses: azure/container-apps-deploy-action@v1
+              with:
+                appSourcePath: ${{ github.workspace }}/app
+                acrName: portfolioacrf1t2jj
+                containerAppName: portfolio-app
+                resourceGroup: portfolio-rg
+                imageToDeploy: portfolioacrf1t2jj.azurecr.io/portfolio:latest
