@@ -27,4 +27,4 @@ To build a **Zero-Touch CI/CD pipeline** that deploys a containerised React appl
 3.  **Zero-Downtime Updates:** The pipeline injects the new container image into the running App Environment automatically.
 
 ## Cost Optimisation
-This project utilises Terraform to strictly manage costs. The entire infrastructure is ephemeral—it can be destroyed (`terraform destroy`) to stop billing and rebuilt (`terraform apply`) in minutes.
+This project utilises Terraform to strictly manage costs. The entire infrastructure is ephemeral and can be destroyed (`terraform destroy`) to stop billing and rebuilt (`terraform apply`) in minutes.
